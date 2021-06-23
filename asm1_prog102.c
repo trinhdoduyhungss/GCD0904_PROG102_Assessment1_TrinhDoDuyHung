@@ -5,6 +5,7 @@ Solution: 1 - Get index from insertion sort to find who has highest or lowest gr
 */
 
 #include<stdio.h>
+#include <stdlib.h>
 #define MAX_STUDENT 40
 
 int n=0;
@@ -22,6 +23,7 @@ void addStudents();
 void showStudents();
 void showHigh_lowest();
 int check_exist(int);
+int check_valid(char*);
 
 int main(){
     while(stop){
@@ -62,32 +64,56 @@ int check_exist(int ids){
         }
     }
 }
+int check_valid(char *user_input){
+    int i = 0;
+    int check_charac = 0;
+    if(user_input[0] != '\n'){
+        for(i; user_input[i] != '\0'; i++){
+            if(user_input[i] >= '0' && user_input[i] <= '9'){
+               check_charac += 1;
+               break;
+            }
+        }
+    }else{
+        return -1;
+    }
+    if(check_charac == 1){
+        return 1;
+    }else{
+        return 0;
+    }
+}
 void addStudents(){
     printf("\n ========================== ADD DATA ==========================\n");
     printf(" Please enter the total number of students (n<%d): ", MAX_STUDENT);
     scanf("%d",&n);
     if(n < MAX_STUDENT){
-        printf("\n Please enter student's id and grade\n");
+        printf("\n Please enter student's id and grade");
         int count = 0;
         while(count < n){
-            int ids;
-            printf(" Please enter student's id: ");
-            scanf("%ld", &ids);
-            int check = check_exist(ids);
-            if(check){
-                student_id[count] = ids;
-                printf(" Please enter student's grade: ");
-                scanf("%f", &student_grade[count]);
-                count += 1;
-            }else{
-                printf(" This student id already exists, please add another\n");
+            char student_id_input[MAX_STUDENT];
+            printf("\n Please enter student's id: ");
+            fgets(student_id_input, sizeof(student_id_input), stdin);
+            int check_valid_input = check_valid(student_id_input);
+            if(check_valid_input==1){
+                int ids = atoi(student_id_input);
+                int check = check_exist(ids);
+                if(check){
+                    student_id[count] = ids;
+                    printf(" Please enter student's grade: ");
+                    scanf("%f", &student_grade[count]);
+                    count += 1;
+                }else{
+                    printf(" This student id already exists, please add another\n");
+                }
+            }else if(check_valid_input == 0){
+                printf("Not valid");
             }
         }
         showStudents();
         printf("\n ======================== END ADD DATA ========================\n");
     }
 }
-
 void selected(int option){
     switch (option)
     {
@@ -126,13 +152,20 @@ void max_and_low_index(float *a, int n){
         }
 }
 int menu(){
-    int itemSelected;
+    char itemSelected[10];
     printf("\n ============== Student grade management system ===============\n");
     printf("\t 1. Enter your student's id and grade \n");
     printf("\t 2. Show all data \n");
     printf("\t 3. Show who has highest, and who has lowest grade \n");
     printf("\t 4. Exit ");
     printf("\n ==============================================================\n");
-    scanf("%d",&itemSelected);
-    return itemSelected;
+    printf("Enter your option: ");
+    fgets(itemSelected, sizeof(itemSelected), stdin);
+    if(check_valid(itemSelected)){
+        int select = atoi(itemSelected);
+        return select;
+    }else{
+       printf("Not valid. Enter a number not string or character, please!");
+       return -1;
+    }
 }
