@@ -25,6 +25,7 @@ int check_exist(int);
 int check_edit();
 int check_valid(char *);
 void edit_grade(int);
+void draw_chart();
 
 int main()
 {
@@ -36,14 +37,123 @@ int main()
     };
     return 0;
 }
+void draw_chart()
+{
+    if (max_low_index[0] != -1 && max_low_index[1] != -1)
+    {
+        printf("\nGrades\n");
+        for (int i = student_grade[max_low_index[0]] + 1; i > -2; i--)
+        {
+            if( i == student_grade[max_low_index[0]] + 1){
+                printf("   ^\n");
+            }
+            printf("   |\n");
+            if (i >= 0)
+            {
+                printf(" %d +", i);
+            }else{
+                printf("____\n");
+                printf("ID:    ", i);    
+            }
+            for (int ids = 0; ids < MAX_STUDENT; ids++)
+            {
+                if (student_grade[ids] == 0)
+                {
+                    break;
+                }
+                if (i == -1)
+                {
+                    if (student_grade[ids] == student_grade[max_low_index[0]])
+                    {
+                        printf("\033[1;33m");
+                    }
+                    else if (student_grade[ids] == student_grade[max_low_index[1]])
+                    {
+                        printf("\033[1;31m");
+                    }
+                    else if (student_grade[ids] > (student_grade[max_low_index[1]] + student_grade[max_low_index[0]]) / 2)
+                    {
+                        printf("\033[0;32m");
+                    }
+                    printf("   %ld   ", student_id[ids]);
+                    printf("\033[0m");
+                }
+                else
+                {
+                    char header_to_string[100] = "";
+                    char spaces[100] = "";
+                    char space_hearder[100] = "   ";
+                    sprintf(header_to_string, "%ld", student_id[ids]);
+                    strcat(space_hearder, header_to_string);
+                    strcat(space_hearder, "   ");
+                    int total_header_charac = strlen(space_hearder);
+                    int total_to_string = strlen("---");
+                    int total_spaces = total_header_charac - total_to_string;
+                    for (int sp = 0; sp < total_spaces; sp++)
+                    {
+                        strcat(spaces, " ");
+                    }
+                    if (student_grade[ids] >= i)
+                    {
+                        if (student_grade[ids] == student_grade[max_low_index[0]])
+                        {
+                            printf("\033[1;33m");
+                        }
+                        else if (student_grade[ids] == student_grade[max_low_index[1]])
+                        {
+                            printf("\033[1;31m");
+                        }
+                        else if (student_grade[ids] >= (student_grade[max_low_index[1]] + student_grade[max_low_index[0]]) / 2)
+                        {
+                            printf("\033[0;32m");
+                        }
+                        
+                        strcat(spaces, "---");
+                        printf("%s", spaces);
+                        printf("\033[0m");
+                    }
+                    else
+                    {
+                        strcat(spaces, "   ");
+                        printf("%s", spaces);
+                    }
+                }
+            }
+            printf("\n");
+        }
+        printf("\n");
+        printf("\033[1;33m");
+        printf("---: ");
+        printf("\033[0m");
+        printf("Highest grades\n");
+        printf("\033[1;31m");
+        printf("---: ");
+        printf("\033[0m");
+        printf("Lowest grades\n");
+        printf("\033[0;32m");
+        printf("---: ");
+        printf("\033[0m");
+        printf("Good grades\n");
+        printf("---: ");
+        printf("Normal grades\n");
+        printf("\n");
+    }
+}
 void showHigh_lowest()
 {
     max_and_low_index(student_grade, n);
     if (max_low_index[0] != -1 && max_low_index[1] != -1)
     {
+        printf("\n -----------------------Full table----------------------- ");
+        showStudents();
         printf("\n These are your data:\n ");
         printf("Student ID has highest grade: %d\n ", student_id[max_low_index[0]]);
         printf("Student ID has lowest grade: %d\n ", student_id[max_low_index[1]]);
+        printf("\n");
+        printf(" ----------------------Start chart---------------------- \n");
+        draw_chart();
+        printf(" ----------------------End chart---------------------- \n");
+        printf("\n");
     }
 }
 void showStudents()
@@ -59,8 +169,8 @@ void showStudents()
         printf("\n-----------------------------------");
         printf("\n|  STT  |  Student's ID  |  Grade  ");
         printf("\n|-------|----------------|---------");
-        int length = sizeof(student_id) / sizeof(student_id[0]);
-        for (int i = 0; i < length; i++)
+
+        for (int i = 0; i < MAX_STUDENT; i++)
         {
             if (student_id[i] == 0)
             {
@@ -90,7 +200,7 @@ void showStudents()
             }
             strcat(stid_to_string, stid_spaces);
 
-            printf("\n|%s|%s| %.2f", i_to_string, stid_to_string, student_grade[i]);
+            printf("\n|%s|%s|%.2f", i_to_string, stid_to_string, student_grade[i]);
             printf("\n|-------|----------------|---------");
         }
         printf("\n");
@@ -151,9 +261,9 @@ int check_edit()
 }
 void edit_grade(int ids)
 {
-    int length = sizeof(student_id) / sizeof(student_id[0]);
+
     int index_student;
-    for (int i = 0; i <= length; i++)
+    for (int i = 0; i <= MAX_STUDENT; i++)
     {
         if (ids == student_id[i])
         {
@@ -174,12 +284,12 @@ void addStudents()
     if (n < MAX_STUDENT && n >= 2)
     {
         printf("\n Please enter student's id and grade");
-        int length = sizeof(student_id) / sizeof(student_id[0]);
+
         int count = 0;
         int no = 0;
         if (student_id[0] != 0)
         {
-            for (int spread = 0; spread < length; spread++)
+            for (int spread = 0; spread < MAX_STUDENT; spread++)
             {
                 if (student_id[spread] == 0)
                 {
@@ -216,7 +326,9 @@ void addStudents()
                         if (yes_edit == 1)
                         {
                             edit_grade(ids);
-                        }else{
+                        }
+                        else
+                        {
                             printf(" This student id already exists, please add another. Press Enter button to continue");
                         }
                     }
@@ -265,10 +377,13 @@ void max_and_low_index(float *a, int n)
     }
     else
     {
-        int length = sizeof(student_id) / sizeof(student_id[0]);
-        int i, max_i, low_i = 0;
-        float max, low = a[i];
-        for (i = 1; i < length; i++)
+        int i = 0;
+        int max_i = 0;
+        int low_i = 0;
+        float max = a[i];
+        float low = a[i];
+        float sorted_student_grade[MAX_STUDENT] = {max};
+        for (i = 1; i < MAX_STUDENT; i++)
         {
             if (a[i] == 0)
             {
@@ -279,7 +394,7 @@ void max_and_low_index(float *a, int n)
                 max = a[i];
                 max_i = i;
             }
-            if (a[i] < low)
+            else if (a[i] < low)
             {
                 low = a[i];
                 low_i = i;
