@@ -278,9 +278,11 @@ void edit_grade(int ids)
 }
 void addStudents()
 {
+    char n_enter[10];
     printf("\n ========================== ADD DATA ==========================\n");
     printf(" Please enter the total number of students (1<n<%d): ", MAX_STUDENT);
-    scanf("%d", &n);
+    fgets(n_enter, sizeof(n_enter), stdin);
+    n = atoi(n_enter);
     if (n < MAX_STUDENT && n >= 2)
     {
         printf("\n Please enter student's id and grade");
@@ -408,12 +410,12 @@ int menu()
 {
     char itemSelected[10];
     printf("\n ============== Student grade management system ===============\n");
-    printf("\t Press 1: Enter your student's id and grade \n");
-    printf("\t Press 2: Show all data \n");
-    printf("\t Press 3: Show who has highest, and who has lowest grade \n");
-    printf("\t Press 4: Exit ");
+    printf("\t Enter number 1: Enter your student's id and grade \n");
+    printf("\t Enter number 2: Show all data \n");
+    printf("\t Enter number 3: Show who has highest, and who has lowest grade \n");
+    printf("\t Enter number 4: Exit ");
     printf("\n ==============================================================\n");
-    printf("Enter your option: ");
+    printf("Enter your number: ");
     fgets(itemSelected, sizeof(itemSelected), stdin);
     if (check_valid(itemSelected))
     {
@@ -421,8 +423,13 @@ int menu()
         if (select == 0)
         {
             fgets(itemSelected, sizeof(itemSelected), stdin);
-            select = atoi(itemSelected);
-            return select;
+            if (check_valid(itemSelected)){
+                select = atoi(itemSelected);
+                return select;
+            }else{
+                printf("Not valid. Enter a number not string or character, please!");
+                return -1;
+            }
         }
         else
         {
